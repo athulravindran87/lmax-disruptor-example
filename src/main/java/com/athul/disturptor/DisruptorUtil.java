@@ -10,6 +10,7 @@ public class DisruptorUtil {
 
     public Map<Integer, String> employeeIdMap = new HashMap<>();
     public Map<Integer, String> employeeNameMap = new HashMap<>();
+    public Map<Integer, String> finalMap = new HashMap<>();
 
     public long startTime = 0L;
     public int limit=0;

@@ -4,7 +4,6 @@ import com.athul.disturptor.DisruptorUtil;
 import com.athul.disturptor.model.Employee;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,21 +13,17 @@ import java.util.List;
 public class RegularService {
 
 
-    public void kickOffProcess(int limit) throws Exception
-    {
-        StopWatch stopWatch = new StopWatch();
+    public void kickOffProcess(int limit) throws Exception {
         List<Employee> employeeList = this.prepareEmployeeList(limit);
-
-        stopWatch.start();
-        for(Employee employee: employeeList)
-        {
+        DisruptorUtil.limit = limit;
+        DisruptorUtil.startTime = System.currentTimeMillis();
+        for (Employee employee : employeeList) {
             this.handleId(employee);
             this.handleEmployeeName(employee);
+            this.finalStep(employee);
         }
-        stopWatch.stop();
+        log.info("process completed for {}", employeeList.size());
 
-        log.info("process completed for {}",employeeList.size());
-        log.info("Single Threaded - Total Processing Time: {}", stopWatch.getTotalTimeMillis());
     }
 
     private void handleId(Employee employee) throws Exception
@@ -37,10 +32,19 @@ public class RegularService {
         DisruptorUtil.employeeIdMap.put(employee.getId(), employee.getEmpId());
     }
 
-    private void handleEmployeeName(Employee employee)
+    private void handleEmployeeName(Employee employee) throws Exception
     {
+        Thread.sleep(1);
         //log.info("Handle Employee {}",employee.getId());
         DisruptorUtil.employeeIdMap.put(employee.getId(), employee.getName());
+    }
+
+    private void finalStep(Employee employee) {
+        //log.info("Handle Employee {}",employee.getId());
+        DisruptorUtil.finalMap.put(employee.getId(), employee.getName());
+        if (employee.getId() == DisruptorUtil.limit - 1) {
+            log.info("Single Threaded - Total Processing Time: {}", (System.currentTimeMillis() - DisruptorUtil.startTime));
+        }
     }
 
     private List<Employee> prepareEmployeeList(int limit)

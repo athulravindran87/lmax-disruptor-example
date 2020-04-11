@@ -2,6 +2,7 @@ package com.athul.disturptor.processor;
 
 import com.athul.disturptor.handler.EmployeeIdHandler;
 import com.athul.disturptor.handler.EmployeeNameHandler;
+import com.athul.disturptor.handler.FinalHandler;
 import com.athul.disturptor.model.MyEvent;
 import com.lmax.disruptor.SleepingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -19,18 +20,28 @@ public class DisruptorProcessor {
     private Disruptor<MyEvent> myEventDisruptor;
 
     @Autowired
-    public DisruptorProcessor(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler)
+    public DisruptorProcessor(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler, final FinalHandler finalHandler)
     {
 
-        this.myEventDisruptor = new Disruptor<>(MyEvent::new, 1024, Executors.defaultThreadFactory(), ProducerType.SINGLE, new SleepingWaitStrategy());
-        this.configureHandlers(employeeIdHandler, employeeNameHandler);
+        this.myEventDisruptor = new Disruptor<>(MyEvent::new, 65536, Executors.defaultThreadFactory(), ProducerType.SINGLE, new SleepingWaitStrategy());
+        this.configureHandlers(employeeIdHandler, employeeNameHandler, finalHandler);
 
     }
 
-    private void configureHandlers(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler)
+    private void configureHandlers(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler, final FinalHandler finalHandler)
     {
 
-        this.myEventDisruptor.handleEventsWith(employeeIdHandler).then(employeeNameHandler);
+        this.myEventDisruptor.handleEventsWithWorkerPool(employeeIdHandler)
+                .thenHandleEventsWithWorkerPool(employeeNameHandler)
+                .thenHandleEventsWithWorkerPool(finalHandler);
+    }
+
+    private EmployeeIdHandler[] createArrayOfHandlers(int size) {
+        EmployeeIdHandler[] employeeIdHandlers = new EmployeeIdHandler[5];
+        for (int i = 0; i < size; i++) {
+            employeeIdHandlers[i] = new EmployeeIdHandler();
+        }
+        return employeeIdHandlers;
     }
 
 }

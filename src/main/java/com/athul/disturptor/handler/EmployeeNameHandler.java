@@ -2,21 +2,19 @@ package com.athul.disturptor.handler;
 
 import com.athul.disturptor.DisruptorUtil;
 import com.athul.disturptor.model.MyEvent;
-import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.WorkHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class EmployeeNameHandler implements EventHandler<MyEvent> {
+public class EmployeeNameHandler implements WorkHandler<MyEvent> {
 
     @Override
-    public void onEvent(MyEvent myEvent, long l, boolean b) throws Exception {
-        DisruptorUtil.employeeNameMap.put(myEvent.getEmployee().getId(), myEvent.getEmployee().getName());
+    public void onEvent(MyEvent myEvent) throws Exception {
 
-        if(myEvent.getEmployee().getId() == DisruptorUtil.limit-1)
-        {
-            log.info("Ring Buffer - Total Processing Time: {}", (System.currentTimeMillis() - DisruptorUtil.startTime));
-        }
+        //log.info("Handle Employee {}",myEvent.getEmployee().getId());
+        Thread.sleep(1);
+        DisruptorUtil.employeeNameMap.put(myEvent.getEmployee().getId(), myEvent.getEmployee().getName());
     }
 }

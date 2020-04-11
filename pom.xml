@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.athul</groupId>
-    <artifactId>lmax-disturptor-example</artifactId>
+    <artifactId>lmax-disruptor-example</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>lmax-disturptor-example</name>
+    <name>lmax-disruptor-example</name>
     <description>A project to experience Lmax Disruptor</description>
 
     <properties>

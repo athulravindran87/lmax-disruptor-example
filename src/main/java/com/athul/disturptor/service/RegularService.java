@@ -17,16 +17,23 @@ public class RegularService {
         List<Employee> employeeList = this.prepareEmployeeList(limit);
         DisruptorUtil.limit = limit;
         DisruptorUtil.startTime = System.currentTimeMillis();
-        for (Employee employee : employeeList) {
-            this.handleId(employee);
-            this.handleEmployeeName(employee);
-            this.finalStep(employee);
-        }
+
+        employeeList.parallelStream().forEach(this::hitMainProcess);
         log.info("process completed for {}", employeeList.size());
 
     }
 
-    private void handleId(Employee employee) throws Exception
+    private void hitMainProcess(Employee employee) {
+        try {
+            this.handleId(employee);
+            this.handleEmployeeName(employee);
+            this.finalStep(employee);
+        } catch (Exception e) {
+            log.error("Error in main process ", e);
+        }
+    }
+
+    private void handleId(Employee employee)
     {
         //log.info("Handle Id {}",employee.getId());
         DisruptorUtil.employeeIdMap.put(employee.getId(), employee.getEmpId());

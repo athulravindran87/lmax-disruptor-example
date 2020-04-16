@@ -31,17 +31,34 @@ public class DisruptorProcessor {
     private void configureHandlers(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler, final FinalHandler finalHandler)
     {
 
-        this.myEventDisruptor.handleEventsWithWorkerPool(employeeIdHandler)
-                .thenHandleEventsWithWorkerPool(employeeNameHandler)
-                .thenHandleEventsWithWorkerPool(finalHandler);
+
+        this.myEventDisruptor.handleEventsWithWorkerPool(createArrayOfHandlers(25))
+                .thenHandleEventsWithWorkerPool(createEmployeeNameHandlers(50))
+                .thenHandleEventsWithWorkerPool(createFinalNameHandlers(25));
     }
 
     private EmployeeIdHandler[] createArrayOfHandlers(int size) {
-        EmployeeIdHandler[] employeeIdHandlers = new EmployeeIdHandler[5];
+        EmployeeIdHandler[] employeeIdHandlers = new EmployeeIdHandler[size];
         for (int i = 0; i < size; i++) {
             employeeIdHandlers[i] = new EmployeeIdHandler();
         }
         return employeeIdHandlers;
+    }
+
+    private EmployeeNameHandler[] createEmployeeNameHandlers(int size) {
+        EmployeeNameHandler[] employeeNameHandlers = new EmployeeNameHandler[size];
+        for (int i = 0; i < size; i++) {
+            employeeNameHandlers[i] = new EmployeeNameHandler();
+        }
+        return employeeNameHandlers;
+    }
+
+    private FinalHandler[] createFinalNameHandlers(int size) {
+        FinalHandler[] finalHandlers = new FinalHandler[size];
+        for (int i = 0; i < size; i++) {
+            finalHandlers[i] = new FinalHandler();
+        }
+        return finalHandlers;
     }
 
 }

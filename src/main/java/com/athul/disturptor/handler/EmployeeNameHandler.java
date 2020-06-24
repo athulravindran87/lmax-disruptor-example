@@ -13,7 +13,7 @@ public class EmployeeNameHandler implements WorkHandler<MyEvent> {
     @Override
     public void onEvent(MyEvent myEvent) throws Exception {
 
-        //log.info("Handle Employee {}",myEvent.getEmployee().getId());
+        log.debug("Handle Employee {}", myEvent.getEmployee().getId());
         Thread.sleep(1);
         DisruptorUtil.employeeNameMap.put(myEvent.getEmployee().getId(), myEvent.getEmployee().getName());
     }

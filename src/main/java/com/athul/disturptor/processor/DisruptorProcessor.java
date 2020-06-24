@@ -23,18 +23,16 @@ public class DisruptorProcessor {
     public DisruptorProcessor(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler, final FinalHandler finalHandler)
     {
 
-        this.myEventDisruptor = new Disruptor<>(MyEvent::new, 65536, Executors.defaultThreadFactory(), ProducerType.SINGLE, new SleepingWaitStrategy());
+        this.myEventDisruptor = new Disruptor<>(MyEvent::new, 2048, Executors.defaultThreadFactory(), ProducerType.SINGLE, new SleepingWaitStrategy());
         this.configureHandlers(employeeIdHandler, employeeNameHandler, finalHandler);
 
     }
 
-    private void configureHandlers(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler, final FinalHandler finalHandler)
-    {
+    private void configureHandlers(final EmployeeIdHandler employeeIdHandler, final EmployeeNameHandler employeeNameHandler, final FinalHandler finalHandler) {
 
-
-        this.myEventDisruptor.handleEventsWithWorkerPool(createArrayOfHandlers(25))
-                .thenHandleEventsWithWorkerPool(createEmployeeNameHandlers(50))
-                .thenHandleEventsWithWorkerPool(createFinalNameHandlers(25));
+        this.myEventDisruptor.handleEventsWithWorkerPool(createArrayOfHandlers(150))
+                .thenHandleEventsWithWorkerPool(createEmployeeNameHandlers(250))
+                .thenHandleEventsWithWorkerPool(createFinalNameHandlers(150));
     }
 
     private EmployeeIdHandler[] createArrayOfHandlers(int size) {

@@ -19,5 +19,6 @@ public class DisruptorUtil {
     {
         employeeIdMap = new HashMap<>();
         employeeNameMap = new HashMap<>();
+        finalMap = new HashMap<>();
     }
 }
